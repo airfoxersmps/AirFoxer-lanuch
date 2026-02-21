@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Visionaries | Official Premiere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@200;300;400;500;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-orange: #ea580c; 
+            --accent-orange: #f97316;
+            --bg-ivory: #fffcf9;
+            --text-dark: #1c1917;
+            --curtain-color: #ea580c;
+            --curtain-shadow: #7c2d12;
+            --sheer-color: rgba(255, 252, 249, 0.85);
+            --fire-glow: #ff4d00;
+            --fire-bright: #ffca3a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-ivory); 
+            color: var(--text-dark);
+        }
+
+        /* --- Team Intro Sequence (Fixed Visibility & Color) --- */
+        #introStage {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: var(--bg-ivory);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+            padding: 5vh 2rem; /* Added padding to prevent cutoff */
+        }
+
+        .content-layer {
+            text-align: center;
+            width: 100%;
+            max-width: 1100px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: frameReveal 1.2s forwards 0.3s;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto; /* Fallback for very small screens */
+        }
+
+        .content-layer::-webkit-scrollbar { display: none; }
+
+        @keyframes frameReveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .credit-label {
+            font-size: 0.7rem;
+            letter-spacing: 1.2em;
+            text-transform: uppercase;
+            color: var(--brand-orange);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .credit-main {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2.5rem;
+        }
+
+        #teamGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem 1.5rem;
+            margin-bottom: 2.5rem;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .credit-main { font-size: 2.2rem; }
+        }
+
+        @media (max-width: 768px) {
+            #teamGrid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .credit-main { font-size: 1.8rem; }
+            .img-container { width: 65px !important; height: 85px !important; }
+        }
+
+        .member-focus {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .img-container {
+            width: 85px;
+            height: 105px;
+            margin-bottom: 0.5rem;
+            background: #f1f1f1;
+            border: 1px solid rgba(234, 88, 12, 0.15);
+            overflow: hidden;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* NO GRAYSCALE - FULL COLOR AS REQUESTED */
+            filter: contrast(1.05); 
+            transition: transform 0.5s ease;
+        }
+
+        .member-focus:hover img {
+            transform: scale(1.1);
+        }
+
+        .member-info h3 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            line-height: 1.2;
+            color: var(--text-dark);
+        }
+
+        .member-info p {
+            font-size: 0.5rem;
+            color: var(--brand-orange);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-top: 0.1rem;
+            max-width: 180px;
+            line-height: 1.3;
+        }
+
+        .btn-ghost {
+            font-size: 0.75rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--text-dark);
+            padding: 12px 35px;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.15);
+            transition: all 0.4s;
+            background: transparent;
+        }
+
+        .btn-ghost:hover {
+            background: var(--brand-orange);
+            color: #fff;
+            border-color: var(--brand-orange);
+        }
+
+        /* --- Curtain Section --- */
+        #curtainWrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 400;
+            display: flex;
+            pointer-events: none;
+            visibility: hidden;
+            overflow: hidden;
+        }
+        
+        #curtainWrapper.visible { visibility: visible; }
+
+        .curtain-panel {
+            width: 50.5%;
+            height: 100%;
+            background: var(--curtain-color);
+            background-image: repeating-linear-gradient(
+                90deg,
+                var(--curtain-color) 0%,
+                var(--curtain-shadow) 5%,
+                var(--curtain-color) 10%
+            );
+            transition: transform 2.5s cubic-bezier(0.7, 0, 0.2, 1);
+            pointer-events: auto;
+            position: relative;
+            z-index: 402;
+        }
+
+        #curtainWrapper.open .left-panel { transform: translateX(-100%); }
+        #curtainWrapper.open .right-panel { transform: translateX(100%); }
+
+        .sheer-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 401;
+            background: var(--sheer-color);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 2.5s cubic-bezier(0.7, 0, 0.2, 1);
+            transform: translateY(0);
+        }
+
+        #curtainWrapper.lift-sheer .sheer-layer { transform: translateY(-100%); }
+
+        /* --- CENTERED SLOW KGF BURNING REVEAL --- */
+        #celebrationOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 480; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            background: #000; 
+            transition: opacity 2s ease;
+        }
+
+        .word-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .fiery-word {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            line-height: 1.1;
+            /* High-End Fiery Metallic Gradient */
+            background: linear-gradient(to bottom, #fff 0%, #ffca3a 20%, #ff8c00 50%, #ff4d00 80%, #300 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Professional Burning Motion */
+            filter: blur(25px) brightness(4);
+            transition: opacity 3.5s ease, filter 4s ease, transform 4.5s cubic-bezier(0.2, 1, 0.3, 1);
+            transform: scale(0.75) translateY(40px);
+        }
+
+        @media (max-width: 768px) {
+            .fiery-word { font-size: 2.8rem; letter-spacing: 0.1em; }
+        }
+
+        .fiery-word.ignite {
+            opacity: 1;
+            filter: blur(0px) brightness(1.3)
+                    drop-shadow(0 0 20px rgba(255, 77, 0, 1)) 
+                    drop-shadow(0 0 60px rgba(255, 140, 0, 0.8))
+                    drop-shadow(0 0 120px rgba(255, 202, 58, 0.6));
+            transform: scale(1) translateY(0);
+            animation: cinematicFlicker 0.15s infinite alternate;
+        }
+
+        @keyframes cinematicFlicker {
+            from { filter: brightness(1.1) drop-shadow(0 0 20px var(--fire-glow)); transform: rotate(0.1deg); }
+            to { filter: brightness(1.6) drop-shadow(0 0 70px var(--fire-bright)); transform: rotate(-0.1deg); }
+        }
+
+        /* Impact Flash */
+        #kgfFlash {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 490;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .flash-active { animation: flashImpact 1.8s ease-out forwards; }
+        @keyframes flashImpact { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* --- Final Launch UI --- */
+        #launchPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 450;
+            text-align: center;
+            display: none;
+            opacity: 0;
+        }
+
+        #launchPanel.ready { display: block; animation: fadeIn 1.5s forwards; }
+
+        .launch-btn {
+            background: #fff;
+            color: var(--brand-orange);
+            font-size: 0.9rem;
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            padding: 1.5rem 5rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            transition: all 0.4s;
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-5px);
+            background: var(--brand-orange);
+            color: #fff;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .overlay-fx {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 600;
+            background: radial-gradient(circle at center, transparent 30%, rgba(255,252,249,0.2) 100%);
+        }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div id="kgfFlash"></div>
+    <div class="overlay-fx"></div>
+
+    <!-- Team Intro Frame -->
+    <div id="introStage">
+        <div class="content-layer">
+            <p class="credit-label">A Digital Premiere Presented By</p>
+            <h1 class="credit-main">The Visionaries</h1>
+            
+            <div id="teamGrid">
+                <!-- Populated via Script below -->
+            </div>
+            
+            <div class="skip-action">
+                <button class="btn-ghost" onclick="startExperience()">Begin Experience</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fiery Reveal Layer (AIRFOXER HACKATHON) -->
+    <div id="celebrationOverlay">
+        <div class="word-container">
+            <h2 id="word1" class="fiery-word">AIRFOXER</h2>
+            <h2 id="word2" class="fiery-word">HACKATHON</h2>
+        </div>
+    </div>
+
+    <!-- Theatrical Curtains -->
+    <div id="curtainWrapper">
+        <div class="sheer-layer">
+            <p class="text-gray-400 tracking-[1.5em] text-[0.7rem] uppercase">Official Reveal</p>
+        </div>
+        <div class="curtain-panel left-panel"></div>
+        <div class="curtain-panel right-panel"></div>
+    </div>
+
+    <!-- Ready State UI -->
+    <div id="launchPanel">
+        <p class="text-white mb-10 text-[0.7rem] tracking-[1em] uppercase opacity-80">The Production is Ready</p>
+        <button class="launch-btn" onclick="executeFinalLaunch()">Reveal Website</button>
+    </div>
+
+    <script>
+        // Updated data with provided names, roles, and exact filenames
+        const members = [
+            { name: "Rushit Jani", role: "Organizing, Planning & Collab", file: "Rushit.jpeg" },
+            { name: "Shiva Bhalke", role: "Technical Lead", file: "SHIVA.png" },
+            { name: "Vyom Vadodariya", role: "Technical Lead", file: "vyom.png" },
+            { name: "Suryanarayan", role: "Collaborations & Operations", file: "Surya_Pic.png" },
+            { name: "Sohan Saha", role: "Collaborations & Operations", file: "sohan.jpeg" },
+            { name: "Yash Soni", role: "PR Lead & Sponsorships", file: "yash.jpg" },
+            { name: "Palak Jain", role: "PR Lead & Sponsorships", file: "Palak.jpeg" },
+            { name: "Sharanya R", role: "Workshop Mgmt & Uni Collaboration", file: "Sharanya.jpg" },
+            { name: "Shruthi Gupta", role: "Media Lead", file: "shurthi.png" }
+        ];
+
+        window.onload = () => {
+            const grid = document.getElementById('teamGrid');
+            if (grid) {
+                grid.innerHTML = members.map((m) => `
+                    <div class="member-focus">
+                        <div class="img-container">
+                            <img src="${m.file}" alt="${m.name}" onerror="this.src='https://via.placeholder.com/90x110/f5f5f5/ea580c?text=IMG'">
+                        </div>
+                        <div class="member-info">
+                            <h3>${m.name}</h3>
+                            <p>${m.role}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        function startExperience() {
+            const intro = document.getElementById('introStage');
+            const launchUI = document.getElementById('launchPanel');
+            const curtains = document.getElementById('curtainWrapper');
+
+            intro.style.opacity = '0';
+            intro.style.transform = 'scale(1.02)';
+
+            setTimeout(() => {
+                intro.style.display = 'none';
+                curtains.classList.add('visible');
+                launchUI.classList.add('ready');
+            }, 1200);
+        }
+
+        function executeFinalLaunch() {
+            const launchUI = document.getElementById('launchPanel');
+            const curtains = document.getElementById('curtainWrapper');
+            const celebOverlay = document.getElementById('celebrationOverlay');
+            const word1 = document.getElementById('word1');
+            const word2 = document.getElementById('word2');
+            const flash = document.getElementById('kgfFlash');
+
+            // Instantly hide the button
+            launchUI.style.opacity = '0';
+            setTimeout(() => launchUI.style.display = 'none', 300);
+            
+            // 1. Open Curtains (0.5s)
+            setTimeout(() => { curtains.classList.add('open'); }, 500);
+
+            // 2. Lift Sheer (2.5s)
+            setTimeout(() => { curtains.classList.add('lift-sheer'); }, 2500); 
+
+            // 3. SLOW DRAMATIC BURNING REVEAL
+            setTimeout(() => {
+                celebOverlay.style.opacity = '1';
+                
+                // AIRFOXER (Starts slow ignition at 5s total)
+                setTimeout(() => {
+                    flash.classList.add('flash-active');
+                    word1.classList.add('ignite');
+                }, 1000);
+
+                // HACKATHON (Starts ignition at 8.5s total)
+                setTimeout(() => {
+                    word2.classList.add('ignite');
+                }, 4500);
+            }, 4000); 
+
+            // Redirect at exactly 14 seconds to allow the slow burn to peak
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 14000); 
+        }
+    </script>
+</body>
+</html>
